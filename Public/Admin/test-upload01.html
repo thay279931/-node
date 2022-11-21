@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .photo {
+            display: inline-block;
+            position: relative;
+            width: 200px;
+            height: 200px;
+            border: 1px solid blue;
+
+        }
+
+        .photo img {
+            position: absolute;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <form name="form1">
+        <input type="file" accept="image/*" name="photos" multiple onchange="upload()">
+        <button type="submit" onclick="upload2()" >送出</button>
+    </form>
+
+    <div id="photo-div">
+        <!--
+        <div class="photo">
+            <img src="/uploads/1a3b3db0-a9b0-46b3-b15c-98190ff75269.png" alt="" >
+        </div>
+    -->
+    </div>
+
+
+    <script>
+        const item_tpl_func = ({ filename }) => {
+            return `<div class="photo">
+            <img src="/uploads/${filename}" alt="" >
+            </div>
+            `;
+        }
+        async function upload2() {
+            const fd = new FormData(document.form1);
+
+            const r = await fetch('/try-upload', {
+                method: 'POST',
+                body: fd
+            });
+
+            const result = await r.json();
+            console.log(result);
+        }
+        async function upload() {
+            const fd = new FormData(document.form1);
+
+            const r = await fetch('/try-upload2', {
+                method: 'POST',
+                body: fd
+            });
+
+            const result = await r.json();
+            console.log(result);
+
+            let str = '';
+
+            if (result && result.length) {
+                 str = result.map(({ filename }) => {
+                    return `<div class="photo" draggable="true">
+            <img src="/uploads/${filename}" alt="" >
+            </div>
+            `;
+
+                });
+
+                document.querySelector('#photo-div').innerHTML = str;
+                let div = document.querySelectorAll(".photo");
+                let container = null;
+                for (let i = 0; i < div.length; i++) {
+                    div[i].ondragstart = function () {
+                        container = this; 
+                    }
+                    div[i].ondragover = function () {
+                        event.preventDefault();
+                    }
+                    div[i].ondrop = function () {
+                        if (container != null && container != this) {
+                            var temp = document.createElement('div');
+                            document.querySelector("#photo-div").replaceChild(temp, this);
+                            document.querySelector("#photo-div").replaceChild(this, container);
+                            document.querySelector("#photo-div").replaceChild(container, temp);
+                            
+                        }
+                    }
+                    
+                }
+            }
+
+        }
+    </script>
+</body>
+
+</html>

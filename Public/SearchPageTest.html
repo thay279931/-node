@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>隨饗</title>
+    <link rel="stylesheet" href="/reset.css">
+    <link rel="stylesheet" href="/CssTemplate.css">
+    <link rel="stylesheet" href="/CssSetting_YU.css">
+    <style>
+        tr,
+        td {
+            border: 1px red solid;
+        }
+
+        .btnFrame {
+            gap: 0px;
+        }
+
+        .btnFrame>li {
+            border: 1px red solid;
+            padding: 8px;
+            font-size: 20px;
+            width: 40px;
+            aspect-ratio: 1;
+            text-align: center;
+            line-height: 20px;
+            cursor: pointer;
+        }
+
+        .btnFrame:first-child {
+            border-bottom: 1px red solid;
+            border-top: 1px red solid;
+            border-right: 1px red solid;
+            border-left: 1px red solid;
+        }
+
+        .btnFrame:last-child {
+            border-bottom: 1px red solid;
+            border-top: 1px red solid;
+            border-right: 1px red solid;
+            border-left: 1px red solid;
+        }
+
+        .btnSetted {
+            background-color: #fcc;
+        }
+
+        .cartTotal {
+            font-size: 20px;
+        }
+
+        .cartTotal::before {
+            content: "購物車總數:";
+        }
+    </style>
+</head>
+
+<body>
+    <div class="disf jc-c ai-c padV5 padH20">
+        <form name="searchProcduct" onsubmit="goSearch(event);">
+            <div class="disf jc-c ai-c padV5 padH20">
+                <input id="searchBox" type="text">
+                <button>商品搜尋</button>
+            </div>
+
+            <div class="disf jc-c ai-c padV5 padH20 fd-c">
+                <p class="marb5">排序方式</p>
+                <div>
+                    <label for="sortUp">升序</label>
+                    <input onclick="goPage();" type="radio" checked name="sort" id="sortUp">
+                    <label for="sortDown">降序</label>
+                    <input onclick="goPage();" type="radio" name="sort" id="sortDown">
+                </div>
+
+            </div>
+            <div class="disf jc-c ai-c padV5 padH20 fd-c">
+                <p class="marb5">排序對象</p>
+                <div>
+                    <label for="sortByPrice">價格</label>
+                    <input onclick="goPage();" type="radio" checked name="sortBy" id="sortByPrice">
+                    <label for="sortBySid">SID</label>
+                    <input onclick="goPage();" type="radio" name="sortBy" id="sortBySid">
+                </div>
+            </div>
+            <div class="disf jc-c ai-c padV5 padH20 fd-c">
+                <p class="marb5">價格範圍</p>
+                <div>
+                    <label for="priceMin">下限</label>
+                    <input type="number" checked name="price" id="priceMin" value="0" min="0">
+                    <label for="priceMax">上限</label>
+                    <input type="number" name="price" id="priceMax" value="0" min="0">
+                </div>
+            </div>
+        </form>
+
+    </div>
+    <div>
+        <p class="cartTotal">
+
+        </p>
+    </div>
+
+    <div class="disf jc-c ai-c padV20 padH20 fd-c">
+        <div class="disf jc-c ai-c padV20 padH20">
+            <ul class="btnFrame disf jc-c ai-c">
+                <li id="preBtn">＜</li>
+                <li>1</li>
+                <li>2</li>
+                <li>3</li>
+                <li>4</li>
+                <li>5</li>
+                <li>6</li>
+                <li>7</li>
+                <li>8</li>
+                <li>9</li>
+                <li>10</li>
+                <li>11</li>
+                <li id="nextBtn">＞</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="disf jc-c ai-c padV20 padH20">
+        <table>
+            <thead>
+                <tr>
+                    <td>SID</td>
+                    <td>商品名稱</td>
+                    <td>價格</td>
+                    <td>店家SID</td>
+                    <td>加入</td>
+                    <td>減少</td>
+
+                    <!-- <td>上架狀態-店家</td> -->
+                    <!-- <td>上架狀態-管理者</td> -->
+                </tr>
+            </thead>
+            <tbody id="dataset">
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        //搜尋
+        const searchBox = document.querySelector("#searchBox");
+        //頁數按鈕群
+        const btnFrame = document.querySelector(".btnFrame");
+        //tbody
+        const dataset = document.querySelector("#dataset");
+        //按鈕要幾個 奇數
+        const buttonAmount = 11;
+        //價格範圍
+        const priceMax = document.querySelector("#priceMax");
+        const priceMin = document.querySelector("#priceMin");
+        //排序順序
+        const sortUp = document.querySelector("#sortUp");
+        const sortDown = document.querySelector("#sortDown");
+        //排序對象
+        const sortByPrice = document.querySelector("#sortByPrice");
+        const sortBySid = document.querySelector("#sortBySid");
+        //購物車總數顯示框
+        const cartTotal = document.querySelector(".cartTotal");
+        //全域儲存總頁數
+        let totalPageAllField = 0;
+        //全域儲存現在頁數
+        let pageNowAllField = 0;
+        //按鈕群事件綁定
+        btnFrame.addEventListener("click", (e) => {
+            let target = e.target;
+            let className = target.classList.value || null;
+            //同一頁不動作
+            if (target.tagName === "LI" && !className) {
+                let page = Number(target.innerText);
+                if (page) {
+                    goPage(page);
+                }
+            }
+            else if (target.tagName === "LI" && className === "firstPage") {
+                goPage(1);
+            }
+            else if (target.tagName === "LI" && className === "lastPage") {
+                goPage(totalPageAllField);
+            }
+            else if (target.tagName === "LI" && className === "previousPage"){
+                if(pageNowAllField!==1){
+                goPage(pageNowAllField - 1)};
+            }
+            else if (target.tagName === "LI" && className === "nextPage"){
+                if(pageNowAllField!==totalPageAllField){
+                    goPage(pageNowAllField + 1);
+                }
+            }
+        })
+
+        //叫資料
+        async function getData() {
+            let usp = new URLSearchParams(location.search);
+            const r = await fetch('/GetSearch?' + usp.toString());
+            const res = await r.json();
+            // console.log(res);
+            let perPage = res.perPage;
+            let totalPages = res.totalPages;
+            totalPageAllField = totalPages;
+            let pageNow = res.page;
+            pageNowAllField = pageNow;
+            let totalRows = res.totalRows;
+            let data = res.datas;
+            renderData(data);
+            renderButton(totalPages, pageNow);
+        }
+
+        //搜尋
+        function goSearch(evt) {
+            evt.preventDefault();
+            let searchString = searchBox.value;
+            goPage(1, searchString);
+        }
+
+        //渲染畫面
+        function renderData(datas) {
+            let docFrag = document.createDocumentFragment();
+            datas.forEach((value) => {
+                let obj = value;
+                let newNode = document.createElement("tr");
+                createToAppendChild(newNode, "td", null, obj.sid);
+                createToAppendChild(newNode, "td", null, obj.name);
+                createToAppendChild(newNode, "td", null, obj.price);
+                createToAppendChild(newNode, "td", null, obj.shop_sid);
+                let tdBtnAdd = document.createElement("td");
+                createToAppendChild(tdBtnAdd, "button", "addButton", "+");
+                let tdBtnCut = document.createElement("td");
+                createToAppendChild(tdBtnCut, "button", "cutButton", "-");
+                newNode.appendChild(tdBtnAdd);
+                newNode.appendChild(tdBtnCut);
+                docFrag.appendChild(newNode);
+            })
+            while (dataset.hasChildNodes()) {
+                dataset.removeChild(dataset.lastChild)
+            }
+            dataset.appendChild(docFrag);
+        }
+
+        //產生按鈕      1018/1600 
+        function renderButton(totalPages, pageNow) {
+            //總頁數()totalPages
+            //現在在第幾頁pageNow
+            //按鈕數量buttonAmount
+            //外框btnFrame
+            let getButtonAmount = buttonAmount;
+            //資料太少的話產生的按鈕要= 資料總頁數
+            if (totalPages < buttonAmount) {
+                getButtonAmount = totalPages;
+            }
+            //產生按鈕
+            let docFrag = document.createDocumentFragment();
+
+            createToAppendChild(docFrag, "li", "firstPage", "<<");
+            createToAppendChild(docFrag, "li", "previousPage", "<");
+            for (let i = 0; i < getButtonAmount; i++) {
+                let page = 0;
+                if (pageNow >= 6 && pageNow <= totalPages - (getButtonAmount - 1) / 2) {
+                    page = pageNow - 5 + i;
+                }
+                else if (pageNow < 6) {
+                    page = 1 + i;
+                }
+                else if (pageNow > totalPages - getButtonAmount) {
+                    page = totalPages - getButtonAmount + 1 + i;
+                }
+                //現在頁要特殊顏色
+                if (page !== pageNow) {
+                    createToAppendChild(docFrag, "li", null, page);
+                }
+                else if (page === pageNow) {
+                    // btnSetted
+                    createToAppendChild(docFrag, "li", "btnSetted", page);
+                }
+            }
+            createToAppendChild(docFrag, "li", "nextPage", ">");
+            createToAppendChild(docFrag, "li", "lastPage", ">>");
+            while (btnFrame.hasChildNodes()) {
+                btnFrame.removeChild(btnFrame.lastChild);
+            }
+            btnFrame.appendChild(docFrag);
+        }
+
+        //按鈕事件(前往第幾頁)
+        function goPage(page, string) {
+            checkPrice();
+            //網址列增加文字
+            const usp = new URLSearchParams(location.search);
+            let searchString = usp.get("search");
+            const selectedPage = Number(usp.get("page")) || 1;
+            //設定page
+            if (page) {
+                usp.set('page', page);
+            }
+            else {
+                usp.set('page', selectedPage);
+            }
+            //有搜尋則加搜尋(搜尋INPUT內的字串優先)
+            if (string) {
+                usp.set('search', string);
+            }
+            else if (searchString) {
+                usp.set('search', searchString);
+            }
+            else {
+                usp.delete('search');
+            }
+            //排序方式
+            if (sortUp.checked) {
+                usp.delete('sort');
+            } else if (sortDown.checked) {
+                usp.set('sort', "down");
+            }
+            //排序對象
+            if (sortByPrice.checked) {
+                usp.delete('sortBy');
+            } else if (sortBySid.checked) {
+                usp.set('sortBy', "sid");
+            }
+            //價格範圍
+            const pMin = Number(priceMin.value);
+            if (pMin && pMin !== 0) {
+                usp.set('priceMin', pMin);
+            }
+            else {
+                usp.delete('priceMin');
+            }
+            const pMax = Number(priceMax.value);
+            if (pMax && pMax !== 0) {
+                usp.set('priceMax', pMax);
+            } else {
+                usp.delete('priceMax');
+            }
+            //設定pushState
+            history.pushState('', '', '?' + usp.toString());
+            getData();
+        }
+
+        //產生節點     (父層,Tag名,Class全部,文字內容)  後兩項如不用則輸入null
+        function createToAppendChild(parentNodeAppend, tagName, classListAll, setInnerText) {
+            let newNode = document.createElement(`${tagName}`);
+            if (classListAll) {
+                newNode.classList.add(classListAll);
+            }
+            if (setInnerText) {
+                let textNode = document.createTextNode(setInnerText);
+                newNode.appendChild(textNode);
+            }
+            parentNodeAppend.appendChild(newNode);
+        }
+
+        //上一頁紀錄
+        window.addEventListener('popstate', function () {
+            checkQuery();
+            getData();
+        });
+
+        //檢查query並放回對應的位置
+        function checkQuery() {
+            const usp = new URLSearchParams(location.search);
+            //搜尋欄文字放回
+            if (usp.get('search')) {
+                searchBox.value = usp.get('search');
+            }
+            else {
+                searchBox.value = '';
+            }
+            //排序選項放回
+            if (usp.get('sort')) {
+                sortDown.checked = true;
+                sortUp.checked = false;
+            }
+            else {
+                sortDown.checked = false;
+                sortUp.checked = true;
+            }
+            //排序對象放回
+            if (usp.get('sortBy')) {
+                sortByPrice.checked = false;
+                sortBySid.checked = true;
+            }
+            else {
+                sortByPrice.checked = true;
+                sortBySid.checked = false;
+            }
+            //價格範圍放回
+            if (usp.get('priceMax')) {
+                priceMax.value = usp.get('priceMax');
+            }
+            else {
+                priceMax.value = 0;
+            }
+            if (usp.get('priceMin')) {
+                priceMin.value = usp.get('priceMin');
+            }
+            else {
+                priceMin.value = 0;
+            }
+        }
+
+        //價格高低判定
+        function checkPrice() {
+            const pMin = priceMin.value;
+            const pMax = priceMax.value;
+            if (pMin > pMax && pMax != 0) {
+                priceMin.value = pMax;
+            }
+        }
+        //購物車API
+        function buttonEvent(evt) {
+            let target = evt.target;
+            let className = target.classList.value || null;
+            // console.log(target.closest("tr").childNodes[0].innerText.trim());   //0 sid  3  ssid 
+            // console.log(target.closest("tr").childNodes[3].innerText.trim());
+            if (target.tagName === "BUTTON" && className) {
+                let state = null;
+                className === "cutButton" ? state = 1 : state = 0;
+                let setSid = target.closest("tr").childNodes[0].innerText.trim();
+                let shopSid = target.closest("tr").childNodes[3].innerText.trim();
+                let FD = JSON.stringify({
+                    "sid": setSid,
+                    "shop_sid": shopSid,
+                    "state": state
+                });
+                fetch('/ShoppingProductSet', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: FD
+                }).then(r => r.json()).then(res => {
+                    cartTotal.innerText = res.cartTotal;
+                })
+            }
+        }
+        dataset.addEventListener("click", buttonEvent);
+
+        //開始時執行
+        //放回query
+        checkQuery();
+        //獲得資料並渲染
+        getData();
+    </script>
+
+
+</body>
+
+</html>

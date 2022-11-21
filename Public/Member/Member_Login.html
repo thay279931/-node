@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>會員登入</title>
+    <link rel="stylesheet" href="/reset.css">
+    <link rel="stylesheet" href="/CssTemplate.css">
+    <style>
+        fieldset {
+            width: fit-content;
+            border: 3px dotted aqua;
+            border-radius: 10px;
+            margin: 20px auto;
+        }
+
+        legend {
+            border: 3px dotted aqua;
+            border-radius: 10px;
+            padding: 5px 20px;
+        }
+
+        .st {
+            width: 400px;
+            border-bottom: 3px double #F0F;
+            padding-bottom: 10px;
+            margin: 20px;
+
+        }
+
+        .title {
+            width: 100px;
+            float: left;
+            text-align: right;
+            padding-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <fieldset>
+        <legend>會員登入</legend>
+        <form id="memberLoginForm" name="memberLoginForm" enctype="application/x-www-form-urlencoded">
+            <div class="st">
+                <label for="" class="title">帳號</label>
+                <input id="email" type="text" name="email" placeholder="請輸入帳號">
+            </div>
+
+            <div class="st">
+                <label for="" class="title">密碼</label>
+                <input id="password" type="password" name="password" placeholder="請輸入密碼">
+            </div>
+
+            <div class="st btn">
+                <button type="button" id="loginSubmit">登入</button>
+                <input type="reset" value="重置">
+                <button class="fastLogin">快速登入</button>
+            </div>
+        </form>
+    </fieldset>
+
+    <script>
+        //登入按鈕
+        const submitButton = document.querySelector("#loginSubmit");
+        //帳號輸入
+        const emailInput = document.querySelector("#email");
+        //密碼輸入
+        const passwordInput = document.querySelector("#password");
+
+        const fastLogin = document.querySelector(".fastLogin");
+
+        // const memberLoginForm = document.querySelector("#memberLoginForm");
+
+        //快速登入
+        fastLogin.addEventListener("click", (e) => {
+            e.preventDefault();
+            emailInput.value ="test@test.com" ;
+            passwordInput.value = "test";
+        })
+
+
+        //登入按鈕事件
+        submitButton.addEventListener("click", () => {
+            //空值判定
+            if (!emailInput.value || !passwordInput.value) {
+                alert("輸入不可為空！！");
+            }
+            //發POST
+            // let postData = new FormData(memberLoginForm);
+            let FD = { email: emailInput.value, password: passwordInput.value }
+            FD = JSON.stringify(FD);
+            // postData.append("email", emailInput.value);
+            // console.log(emailInput.value);
+            // postData.append("password", passwordInput.value);
+            // console.log(postData);
+            fetch("/MemberLoginApi", {
+                method: "POST",
+                headers: {
+                    // 'Content-Type':'application/x-www-form-urlencoded'
+                    // 'Content-Type':'text/html'
+                    'Content-Type': 'application/json'
+                },
+                body: FD
+            }).then(r => r.json()).then(res => {
+                if(res===1){
+                    location.href = "/";
+                }
+                else{
+                    alert("Error");
+                }
+                console.log(res);
+                // alert(res.email);
+            })
+
+        })
+      
+
+
+    </script>
+
+</body>
+
+</html>

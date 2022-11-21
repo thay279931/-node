@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>店家登入</title>
+    <link rel="stylesheet" href="/reset.css">
+    <link rel="stylesheet" href="/CssTemplate.css">
+    <style>
+        fieldset {
+            width: fit-content;
+            border: 3px dotted #Fcc;
+            border-radius: 10px;
+            margin: 20px auto;
+        }
+
+        legend {
+            border: 3px dotted #Fcc;
+            border-radius: 10px;
+            padding: 5px 20px;
+        }
+
+        .st {
+            width: 400px;
+            border-bottom: 3px double #0FF;
+            padding-bottom: 10px;
+            margin: 20px;
+
+        }
+
+        .title {
+            width: 100px;
+            float: left;
+            text-align: right;
+            padding-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <fieldset>
+        <legend>店家登入</legend>
+        <form id="memberLoginForm" name="memberLoginForm" enctype="application/x-www-form-urlencoded">
+            <div class="st">
+                <label for="" class="title">帳號</label>
+                <input id="email" type="text" name="email" placeholder="請輸入帳號">
+            </div>
+
+            <div class="st">
+                <label for="" class="title">密碼</label>
+                <input id="password" type="password" name="password" placeholder="請輸入密碼">
+            </div>
+
+            <div class="st btn">
+                <button type="button" id="loginSubmit">登入</button>
+                <input type="reset" value="重置">
+                <button class="storeLogin">店家快速登入</button>
+                <button class="adminLogin">管理者快速登入</button>
+            </div>
+        </form>
+    </fieldset>
+
+    <script>
+        //登入按鈕
+        const submitButton = document.querySelector("#loginSubmit");
+        //帳號輸入
+        const emailInput = document.querySelector("#email");
+        //密碼輸入
+        const passwordInput = document.querySelector("#password");
+
+        const storeLogin = document.querySelector(".storeLogin");
+
+        const adminLogin = document.querySelector(".adminLogin");
+
+        storeLogin.addEventListener("click",(e)=>{
+            e.preventDefault();
+            emailInput.value = "S89account";
+            passwordInput.value = "S89password";
+        })
+
+        adminLogin.addEventListener("click",(e)=>{
+            e.preventDefault();
+            emailInput.value = "admin@test.com";
+            passwordInput.value = "test";
+        })
+
+
+
+
+
+        // const memberLoginForm = document.querySelector("#memberLoginForm");
+
+        //登入按鈕事件
+        submitButton.addEventListener("click", () => {
+            //空值判定
+            if (!emailInput.value || !passwordInput.value) {
+                alert("輸入不可為空！！");
+                return;
+            }
+            //發POST
+            // let postData = new FormData(memberLoginForm);
+            let FD = {email:emailInput.value,password: passwordInput.value}
+            FD = JSON.stringify(FD)
+            // postData.append("email", emailInput.value);
+            // console.log(emailInput.value);
+            // postData.append("password", passwordInput.value);
+            // console.log(postData);
+            fetch("/StoreLoginApi", {
+                method: "POST",
+                headers: {'Content-Type':'application/json'},
+                body: FD
+            }).then(r => r.json()).then(res => {
+                if(res==1){
+                    location.href = "/";
+                }
+                else{
+                    alert("錯誤");
+                    console.log(res);
+                }
+
+                // alert(res.email);
+            })
+
+        })
+
+
+    </script>
+
+</body>
+
+</html>

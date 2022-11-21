@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>隨饗</title>
+    <link rel="stylesheet" href="/reset.css">
+    <link rel="stylesheet" href="/CssTemplate.css">
+    <link rel="stylesheet" href="/CssSetting_YU.css">
+    <style>
+
+    </style>
+</head>
+
+<body>
+
+
+    <h2 class="txtACenter orderTitleh2">訂單確認</h2>
+    <div id="payFrame" class="orderAllFrame">
+
+    </div>
+
+
+    <div class="orderAllFrame">
+
+
+        <div class="orderframe">
+            <!-- 訂單概略 -->
+            <div class="orderInfo txtACenter">
+                <p id="payShopName" class="shopName">
+                    OO義大利麵
+                </p>
+                <p id="waittingTime"></p>
+            </div>
+            <!-- 訂單明細 -->
+            <div class="paydetail" id="odFrame">
+                <!-- 明細左半 -->
+                <div id="payProduct" class="orderProductFrame">
+                </div>
+                <!-- 明細右半 -->
+                <div class="orderProductInfo">
+                    <label for="payMemo" class="mb5">備註</label><br>
+                    <textarea class="w80p" cols="40" rows="5" id="payMemo" name="payMemo"></textarea>
+                    <div>
+                        <p class="mb5">總金額</p>
+                        <p class="mb5" id="payTotalPrice"></p>
+                    </div>
+                    <div class="priceCut">
+                        <p class="mb5">
+                            優惠
+                        </p>
+                        <div id="priceCutTitle"></div>
+                        <select class="mb5" name="priceCutOption" id="priceCut">
+                            <option value="0" selected>無</option>
+                        </select>
+                        <p class="mb5">折扣後金額</p>
+                        <p id="cuttedPrice"></p>
+                    </div>
+
+                    <div>
+                        <button id="finalPay">結帳</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+    <script>
+        //商品明細顯示框
+        let payFrame = document.querySelector("#payProduct");
+        //商店名稱
+        let payShopName = document.querySelector("#payShopName");
+        //總金額顯示框
+        let payTotalPrice = document.querySelector("#payTotalPrice");
+        //優惠券選項框
+        let priceCut = document.querySelector("#priceCut");
+        //折扣後金額顯示框
+        let cuttedPrice = document.querySelector("#cuttedPrice");
+        //隱藏優惠券SID框
+        let priceCutTitle = document.querySelector("#priceCutTitle");
+        //結帳按鈕新
+        let finalPayBTN = document.querySelector("#finalPay");
+        //備註
+        let payMemo = document.querySelector("#payMemo");
+        //總金額顯示
+        let tsum = 0;
+        //等待時間框
+        let waittingTime = document.querySelector("#waittingTime");
+        fetch("/PayPageRenderApi").then(r => r.json()).then(res => {
+            // console.log("res",res);
+            // console.log("coupon",res["coupon"]);
+            //讀出購物車
+            let docFrag = document.createDocumentFragment();
+            payShopName.innerText = res.cart[0].name;
+            waittingTime.innerText = res.cart[0].wait_time;
+            res.cart.forEach(element => {
+                let {
+                    Sid,
+                    amount,
+                    name,
+                    price,
+                    product_name,
+                    shop_sid,
+                    sid,
+                    wait_time
+                } = element;
+                //商品總框
+                let orderProduct = document.createElement("div");
+                orderProduct.classList.add("orderProduct", "disf");
+                //產品名
+                let productName = document.createElement("h3");
+                productName.classList.add("w40p");
+                let productNameIntxt = document.createTextNode(product_name);
+                productName.appendChild(productNameIntxt);
+                orderProduct.appendChild(productName);
+                //單價
+                let orderPPrice = document.createElement("div");
+                orderPPrice.classList.add("orderPPrice", "w15p", "orderNum");
+                //單價內容
+                //標題
+                let orderPPricep1 = document.createElement("p");
+                let orderPPricep1txt = document.createTextNode("價格");
+                orderPPricep1.appendChild(orderPPricep1txt);
+                //內文
+                let orderPPricep2 = document.createElement("p");
+                let orderPPricep2txt = document.createTextNode(price);
+                orderPPricep2.appendChild(orderPPricep2txt);
+                orderPPrice.appendChild(orderPPricep1);
+                orderPPrice.appendChild(orderPPricep2);
+                orderProduct.appendChild(orderPPrice);
+                //數量
+                let orderPAmount = document.createElement("div");
+                orderPAmount.classList.add("orderPAmount", "orderNum", "w15p");
+                //數量內容
+                //標題
+                let orderPAmountp1 = document.createElement("p");
+                let orderPAmountp1txt = document.createTextNode("數量");
+                orderPAmountp1.appendChild(orderPAmountp1txt);
+                //內文
+                let orderPAmountp2 = document.createElement("p")
+                let orderPAmountp2txt = document.createTextNode(amount);
+                orderPAmountp2.appendChild(orderPAmountp2txt);
+                orderPAmount.appendChild(orderPAmountp1);
+                orderPAmount.appendChild(orderPAmountp2);
+                orderProduct.appendChild(orderPAmount);
+                //總價
+                let orderPTotalprice = document.createElement("div");
+                orderPTotalprice.classList.add("orderPTotalprice", "w15p", "orderNum");
+                //總價內容
+                //標題
+                let orderPTotalpricep1 = document.createElement("p");
+                let orderPTotalpricep1txt = document.createTextNode("總價");
+                orderPTotalpricep1.appendChild(orderPTotalpricep1txt);
+                //內文
+                let orderPTotalpricep2 = document.createElement("p");
+                let orderPTotalpricep2txt = document.createTextNode(amount * price);
+                orderPTotalpricep2.appendChild(orderPTotalpricep2txt);
+                orderPTotalprice.appendChild(orderPTotalpricep1);
+                orderPTotalprice.appendChild(orderPTotalpricep2);
+                orderProduct.appendChild(orderPTotalprice);
+                docFrag.appendChild(orderProduct);
+
+                tsum += amount * price;
+            });
+            payFrame.appendChild(docFrag)
+            payTotalPrice.innerText = tsum;
+            cuttedPrice.innerText = tsum;
+
+            let optionFrag = document.createDocumentFragment();
+
+            let hiddensid = document.createDocumentFragment();
+            //讀出優惠券
+            res.coupon.forEach(value => {
+                let {
+                    coupon_sid,
+                    coupon_name,
+                    sale_detail,
+                    shop_sid,
+                    sid,
+                    expire,
+                    use_range
+                } = value;
+                let Dday = new Date(expire);
+                // console.log(Dday);
+                let Dnow = new Date();
+                if (Dday > Dnow && use_range <= tsum) {
+                    //選項
+                    let options = document.createElement("option");
+                    let inContent = document.createTextNode(coupon_name);
+                    options.value = sale_detail;
+                    options.appendChild(inContent)
+                    optionFrag.appendChild(options);
+                    //隱藏框
+                    let hinput = document.createElement("input")
+                    hinput.setAttribute("value", sid);
+                    hinput.style.visibility = "hidden";
+                    hinput.style.display = "none";
+                    hiddensid.appendChild(hinput);
+
+                }
+            })
+
+            priceCut.appendChild(optionFrag);
+            priceCutTitle.appendChild(hiddensid);
+            // console.log(priceCutTitle.childNodes);
+        })
+
+        //priceCutTitle 隱藏框
+        //cuttedPrice 折扣後金額輸出框
+        priceCut.addEventListener("change", () => {
+            if (priceCut.selectedIndex != 0) {
+                let totalPrice = tsum - priceCut[priceCut.selectedIndex].value;
+                //要記得減1
+                if (totalPrice < 0) {
+                    totalPrice = 0;
+                }
+                cuttedPrice.innerText = totalPrice;
+                //優惠券SID
+                // console.log(priceCutTitle.childNodes[priceCut.selectedIndex - 1].value);
+
+            } else {
+                cuttedPrice.innerText = tsum;
+            }
+        })
+        //結帳按鈕
+        finalPayBTN.addEventListener("click", (evt) => {
+            evt.preventDefault();
+            let wtime = waittingTime.innerText;
+            let payTxt = "是否要結帳?";
+            if (wtime >= 30) {
+                payTxt = `等待時間為${wtime}分鐘，是否確定下訂?`
+            }
+
+            if (!window.confirm(payTxt)) {
+                evt.preventDefault();
+                return;
+            }
+            cartPayF();
+        })
+
+        function cartPayF() {
+            let totalPrize = tsum;
+            let cuttedPriceSend = cuttedPrice.innerText;
+            let csid = 0
+            let memoSend = payMemo.value;
+            if (priceCut.selectedIndex != 0) {
+                csid = priceCutTitle.childNodes[priceCut.selectedIndex - 1].value
+            }
+
+            let FD = JSON.stringify({
+                "price":totalPrize,
+                "cuttedprice":cuttedPriceSend,
+                "coupon_sid":csid,
+                "memos":memoSend
+            });
+
+            fetch("/PayApi", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: FD,
+            }).then(r => r.json()).then(
+                (res) => {
+                    console.log(res);
+                    if(res===1){
+                    alert("付款成功");
+                    location.href = "/Member/Member_Order.html"}
+
+                })
+        }
+    // location.href = "index.php";
+
+
+
+    //測試用
+    // document.querySelector("#JStest").addEventListener("click",()=>{
+    //     console.log(priceCut.selectedOptions[0].value)
+
+    // })
+    </script>
+
+</body>
+
+</html>

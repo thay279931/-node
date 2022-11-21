@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>簡易首頁</title>
+    <link rel="stylesheet" href="reset.css">
+    <link rel="stylesheet" href="CssTemplate.css">
+    <link rel="shortcut icon" href="./images/icon02.png">
+    <style>
+        a {
+            text-decoration: none;
+        }
+
+        a:visited {
+            color: inherit;
+        }
+
+        h1 {
+            font-size: 60px;
+            border-bottom: 6px double #ccf;
+            margin-bottom: 10px;
+            line-height: 80px;
+            color: #33f;
+        }
+
+        h2 {
+            font-size: 48px;
+            border-bottom: 6px double #fcc;
+            margin-bottom: 10px;
+            line-height: 60px;
+            color: #f33;
+        }
+
+        .content {
+            width: 80%;
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .cols {
+            width: 50%;
+            padding: 5px;
+            aspect-ratio: 3/1;
+        }
+
+        @media screen and (min-width:800px) {
+            .cols {
+                width: 25%;
+                padding: 5px;
+            }
+        }
+
+        .cardFrame {
+            width: 100%;
+            height: 100%;
+        }
+
+        .gDriveLink {
+            font-size: 28px;
+            border-bottom: 6px double #cfc;
+            line-height: 40px;
+            color: #3f3;
+        }
+        .logout{
+            font-size: 36px;
+            color: #ccf;
+            border-bottom: 6px double #ccf;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="disf ai-c jc-c w100p fd-c">
+
+        <h2>會員連結</h2>
+
+        <section class="content">
+
+            <div class="cols">
+                <a href="/sessionTest">
+                    <div class="cardFrame autobg disf jc-se ai-c fd-c">
+                        <h3>確認Session</h3>
+
+                    </div>
+                </a>
+            </div>
+
+            <div class="cols">
+                <a href="/Member/Member_Login.html">
+                    <div class="cardFrame autobg disf jc-se ai-c fd-c">
+                        <h3>會員登入</h3>
+
+                    </div>
+                </a>
+            </div>
+
+            <div class="cols">
+                <a href="/Member/Member_Point.html">
+                    <div class="cardFrame autobg disf jc-se ai-c fd-c">
+                        <h3>會員紅利點數確認</h3>
+
+                    </div>
+                </a>
+            </div>
+
+            <div class="cols">
+                <a href="/Member/Member_Order.html">
+                    <div class="cardFrame autobg disf jc-se ai-c fd-c">
+                        <h3>會員訂單確認</h3>
+
+                    </div>
+                </a>
+            </div>
+
+            <div class="cols">
+                <a href="/Member/Member_Coupon.html">
+                    <div class="cardFrame autobg disf jc-se ai-c fd-c">
+                        <h3>會員優惠券確認</h3>
+                    </div>
+                </a>
+            </div>
+
+            <div class="cols">
+                <a href="/Member/Member_CouponGet.html">
+                    <div class="cardFrame autobg disf jc-se ai-c fd-c">
+                        <h3>會員優惠券獲得</h3>
+                    </div>
+                </a>
+            </div>
+
+            <div class="cols">
+                <a href="/Shopping/Products.html">
+                    <div class="cardFrame autobg disf jc-se ai-c fd-c">
+                        <h3>商品列表</h3>
+                    </div>
+                </a>
+            </div>
+
+            <div class="cols">
+                <a href="/Shopping/CartChooseShop.html">
+                    <div class="cardFrame autobg disf jc-se ai-c fd-c">
+                        <h3>購物車店家選擇</h3>
+                    </div>
+                </a>
+            </div>
+
+            <div class="cols">
+                <a href="/Shopping/CartPage.html">
+                    <div class="cardFrame autobg disf jc-se ai-c fd-c">
+                        <h3>購物車確認</h3>
+                    </div>
+                </a>
+            </div>
+
+            <div class="cols">
+                <a href="/Shopping/PayPage.html">
+                    <div class="cardFrame autobg disf jc-se ai-c fd-c">
+                        <h3>結帳確認</h3>
+                    </div>
+                </a>
+            </div>
+
+            <div class="cols">
+                <a href="/SearchPageTest.html">
+                    <div class="cardFrame autobg disf jc-se ai-c fd-c">
+                        <h3>搜尋GET範本</h3>
+                    </div>
+                </a>
+            </div>
+
+            <div class="cols">
+                <a href="/Shopping/Shopping_Random.html">
+                    <div class="cardFrame autobg disf jc-se ai-c fd-c">
+                        <h3>隨機測試</h3>
+                    </div>
+                </a>
+            </div>
+
+
+
+        </section>
+        <h3 class="logout" onclick="logout(0)">會員登出</h3>
+
+
+        <h2>店家連結</h2>
+
+        <section class="content">
+
+            <div class="cols">
+                <a href="/Store/Store_Login.html">
+                    <div class="cardFrame autobg disf jc-se ai-c fd-c">
+                        <h3>店家登入</h3>
+                    </div>
+                </a>
+            </div>
+
+            <div class="cols">
+                <a href="/Store/Store_Order.html">
+                    <div class="cardFrame autobg disf jc-se ai-c fd-c">
+                        <h3>店家訂單</h3>
+                    </div>
+                </a>
+            </div>
+
+            <div class="cols">
+                <a href="/Store/Store_ConfirmOrder.html">
+                    <div class="cardFrame autobg disf jc-se ai-c fd-c">
+                        <h3>店家接單</h3>
+                    </div>
+                </a>
+            </div>
+
+
+
+
+        </section>
+        <h3 class="logout" onclick="logout(1)">店家登出</h3>
+
+        <h2>管理者連結</h2>
+
+        <section class="content">
+
+            <div class="cols">
+                <a href="/Admin/Admin_Coupon.html">
+                    <div class="cardFrame autobg disf jc-se ai-c fd-c">
+                        <h3>優惠券管理</h3>
+                    </div>
+                </a>
+            </div>
+
+            <div class="cols">
+                <a href="#">
+                    <div class="cardFrame autobg disf jc-se ai-c fd-c">
+                        <h3></h3>
+                    </div>
+                </a>
+            </div>
+
+        </section>
+        <h3 class="logout" onclick="logout(2)">管理者登出</h3>
+
+        <div class="marb100"></div>
+
+    </div>
+
+    <script>
+        function logout(who) {
+            const inputData = {"logout":who};
+            let postData = JSON.stringify(inputData);
+            fetch("/Logout", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                    // 'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: postData
+            }).then(r => r.json()).then(res => {
+                if(res==1){
+                    location.reload();
+                }
+                else{
+                    alert("錯誤");
+                }
+            })
+        }
+        function getRandomInt(max) {
+            return Math.floor(Math.random() * Math.floor(max - 50) + 100);
+        }
+        function getRBGA() {
+            return `linear-gradient(135deg, rgba(${getRandomInt(256)},${getRandomInt(256)},${getRandomInt(256)},.5), rgba(${getRandomInt(256)},${getRandomInt(256)},${getRandomInt(256)},.8)`
+        }
+        Array.from(document.querySelectorAll('.autobg')).forEach((element) => {
+            element.style.backgroundImage = getRBGA();
+        });
+    </script>
+</body>
+
+</html>

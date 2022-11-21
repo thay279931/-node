@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link rel="stylesheet" href="/fontawesome/css/all.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8"></div>
+            <div class="col-lg-4">
+                <form class="d-flex" role="search" onsubmit="doSearch(event)">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"
+                        name="search" value="">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col pagi-container">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col table-container">
+            </div>
+        </div>
+
+    </div>
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.5/dayjs.min.js"></script>
+    <script>
+        const t_continer = document.querySelector('.table-container');
+        const p_continer = document.querySelector('.pagi-container');
+
+        function renderPagi({ page, totalPages }) {
+            const p = page;
+            return `
+            <nav aria-label="Page navigation example">
+                    <ul class="pagination">
+                        <li class="page-item  ${1 === page ? 'disabled' : ''}">
+                            <a class="page-link" href="javascript:gotoPageLeft(${p})">
+                                <i class="fa-solid fa-circle-arrow-left"></i>
+                            </a>
+                        </li>
+                
+                        ${Array(11).fill(1).map((el, i) => {
+
+                const p = page - 5 + i;
+                if (p < 1 || p > totalPages) return '';
+                return `
+                                <li class="page-item ${p === page ? 'active' : ''}">
+                                    <a class="page-link" href="javascript:gotoPage(${p})">${p}</a>
+                                </li>
+                                `
+            }).join('')
+                }
+                        
+
+
+                        <li class="page-item  ${totalPages === page ? 'disabled' : ''}">
+                            <a class="page-link" href="javascript:gotoPageRight(${p})">
+                                <i class="fa-solid fa-circle-arrow-right"></i></a>
+                        </li>
+                    </ul>
+                </nav>
+            `;
+        }
+
+        function renderTable({rows}) {
+            return `
+            <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col"><i class="fa-solid fa-trash-can"></i></th>
+                            <th scope="col">#</th>
+                            <th scope="col">姓名</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">密碼</th>
+                            <th scope="col">手機</th>
+                            <th scope="col">點數</th>
+                            <th scope="col">任務</th>
+                            <th scope="col">付款</th>
+                            <th scope="col">圖片</th>
+                            <th scope="col"><i class="fa-solid fa-pen-to-square"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rows.map(el => {
+                return `
+                            <tr>
+                                <td>
+                                        <a href="javascript:delItem(${el.sid})">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </a>
+                                    </td>
+                                <td>${el.sid}</td>
+                                <td>${el.name}</td>
+                                <td>${el.email}</td>
+                                <td>${el.password}</td>
+                                <td>${el.phone}</td>
+                                <td>${el.point}</td>
+                                <td>${el.task}</td>
+                                <td>${el.pay}</td>
+                                <td>${el.image}</td>
+                                <td>
+                                        <a href="http://localhost:3001/Admin/edit-list.html?sid=${el.sid}">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </a>
+                                    </td>
+                            </tr>
+                            `;
+            }).join('')}
+                    </tbody>
+
+                </table>
+            `;
+        }
+
+
+
+
+        async function getDataAndRender() {
+            const usp = new URLSearchParams(location.search);
+            if (usp.get('search')) {
+                document.forms[0].search.value = usp.get('search');
+            } else {
+                document.forms[0].search.value = '';
+            }
+
+            const r = await fetch('/MemberLogin/api?' );
+            const result = await r.json();
+            console.log(result);
+            p_continer.innerHTML = renderPagi(result);
+            t_continer.innerHTML = renderTable(result);
+        }
+
+        getDataAndRender(); // 一開始呼叫
+
+        function doSearch(event) {
+            event.preventDefault(); // 不讓表單送出
+            const f = event.currentTarget;
+            const usp = new URLSearchParams({ search: f.search.value });
+            history.pushState('', '', '?' + usp.toString());
+            getDataAndRender();
+        }
+
+        function gotoPage(p) {
+            const usp = new URLSearchParams(location.search);
+            usp.set('page', p);
+
+            history.pushState('', '', '?' + usp.toString());
+            getDataAndRender();
+        }
+
+        function gotoPageLeft(p) {
+            const usp = new URLSearchParams(location.search);
+            usp.set('page', p - 1);
+
+            history.pushState('', '', '?' + usp.toString());
+            getDataAndRender();
+        }
+
+        function gotoPageRight(p) {
+            const usp = new URLSearchParams(location.search);
+            usp.set('page', p + 1);
+
+            history.pushState('', '', '?' + usp.toString());
+            getDataAndRender();
+        }
+
+        window.addEventListener('popstate', getDataAndRender);
+
+        function delItem(sid) {
+            if (confirm(`確定要刪除編號為 ${sid} 的資料嗎?`)) {
+                fetch('/MemberLogin/del/' + sid, {
+                    method: 'DELETE'
+                }).then(r => r.json())
+                    .then(result => {
+                        console.log(JSON.stringify(result));
+
+                        location.reload();
+                    })
+            }
+        }
+    </script>
+</body>
+
+</html>

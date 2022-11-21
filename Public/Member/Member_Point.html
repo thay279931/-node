@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>隨饗</title>
+    <link rel="stylesheet" href="/reset.css">
+    <link rel="stylesheet" href="/CssTemplate.css">
+    <style>
+        .fs36{
+            font-size: 36px;
+        }
+        th,td{
+            border: 1px solid #ccc;
+            text-align: center;
+            padding: 3px;
+        }
+    </style>
+</head>
+
+<body>
+    <h2 class="marV20 fs36 marb20 marHauto ta-c">紅利使用明細</h2>
+
+    <table class="marHauto" id="pointList_Member">
+        <tr>
+            <th>異動點數</th>
+            <th>異動時間</th>
+            <th>異動原因</th>
+            <th>優惠券名稱</th>
+        </tr>
+    </table>
+    
+<script>
+    let pointList_Member = document.querySelector("#pointList_Member");
+
+    fetch("/MemberPointApi").then(r => r.json()).then(res => {
+
+        if(res===0){
+            alert("請先登入")
+            location.href = "/Index.html";
+            return;
+        }
+        else{
+            console.log(res);
+        }
+
+        let docFrag = document.createDocumentFragment();
+        res.reverse().forEach(value=>{
+            let{
+                coupon_name,
+                point_amount,
+                point_change_method,
+                point_change_time
+            }=value;
+
+            let couponExport = coupon_name;
+            if(!coupon_name){
+                couponExport = "無";
+            }
+
+            let pointRow = document.createElement("tr");            
+            createToAppendChild(pointRow,"td",null,point_amount);
+            createToAppendChild(pointRow,"td",null,point_change_time);
+            createToAppendChild(pointRow,"td",null,point_change_method);
+            createToAppendChild(pointRow,"td",null,couponExport);
+            
+            docFrag.appendChild(pointRow);
+        })
+        pointList_Member.appendChild(docFrag);
+    })
+
+    //產生節點     (父層,Tag名,Class全部,文字內容)  後兩項如不用則輸入null
+    function createToAppendChild(parentNodeAppend,tagName,classListAll,setInnerText){
+        let newNode = document.createElement(`${tagName}`);        
+        if(classListAll!=null){
+            newNode.classList.add(classListAll);
+        }
+        if(setInnerText!=null){
+            let textNode = document.createTextNode(setInnerText);
+            newNode.appendChild(textNode);
+        }
+        parentNodeAppend.appendChild(newNode);
+    }
+
+
+
+
+
+
+    
+</script>
+
+
+
+</body>
+
+</html>

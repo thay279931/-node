@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>隨饗</title>
+    <link rel="stylesheet" href="/reset.css">
+    <link rel="stylesheet" href="/CssTemplate.css">
+    <link rel="stylesheet" href="/CssSetting_YU.css">
+    <style>
+
+    </style>
+</head>
+
+<body>
+
+
+
+    <h2 class="choosePTotal txtACenter"></h2>
+
+    <div id="CartChooseFrame" class="w80p setCenter disf fw-w">
+
+
+    </div>
+
+
+    <script>
+        //顯示框
+        let CartChooseFrame = document.querySelector("#CartChooseFrame");
+        //總數顯示框
+        let choosePTotal = document.querySelector(".choosePTotal");
+
+        let startFD = JSON.stringify({ "state": 0 });
+
+        fetch("/CartChooseShopApi", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: startFD
+        }).then(r => r.json()).then(res => {
+            console.log(res);
+
+            choosePTotal.innerText = res.cartTotal;
+
+            let docFrag = document.createDocumentFragment();
+            res.shopList.forEach(value => {
+
+                let {
+                    shopTotal, //商店內商品總數
+                    shop_name, //商店名
+                    shop_sid //商店SID
+                } = value;
+
+
+                //橫幅
+                let cartinfoCol = document.createElement("div");
+                cartinfoCol.classList.add("pad10", "w25p");
+                let cartinfo = document.createElement("div");
+                cartinfo.classList.add("orderframe", "cursor_pointer", "h80", "aic", "disf", "fd-c", "f-jcsa");
+                cartinfo.style.backgroundColor = "#0C5";
+
+                cartinfo.addEventListener("click", () => {
+
+                    let goNextPage = JSON.stringify({ "state": 1, "choosed_sid": shop_sid });
+
+                    fetch("/CartChooseShopApi", {
+                        method: "POST",
+                        headers: { 'Content-Type': 'application/json' },
+                        body: goNextPage
+                    }).then(r => r.json()).then(res => {
+                        // console.log(res);
+                        if (res == 1) {
+                            // console.log(res);
+                            location.href = "/Shopping/CartPage.html";
+                        }
+                    })
+                })
+
+
+                //店家SID隱藏框
+                let input02 = document.createElement("input")
+                input02.setAttribute("value", shop_sid);
+                input02.setAttribute("name", "shop_sid");
+                input02.style.visibility = "hidden";
+                input02.style.display = "none";
+                cartinfo.appendChild(input02)
+
+                //商店名稱
+                let shopName = document.createElement("p");
+                shopName.classList.add("shopName");
+                let shopNameIntxt = document.createTextNode(shop_name);
+                shopName.appendChild(shopNameIntxt);
+                cartinfo.appendChild(shopName);
+
+                //商品總數
+                let totalAmount = document.createElement("p");
+                totalAmount.classList.add("choosePTotal");
+                let totalAmountIntxt = document.createTextNode(shopTotal);
+                totalAmount.appendChild(totalAmountIntxt);
+                cartinfo.appendChild(totalAmount);
+                cartinfoCol.appendChild(cartinfo);
+
+                docFrag.appendChild(cartinfoCol);
+
+            })
+            CartChooseFrame.appendChild(docFrag);
+
+
+        })
+    </script>
+
+
+</body>
+
+</html>
